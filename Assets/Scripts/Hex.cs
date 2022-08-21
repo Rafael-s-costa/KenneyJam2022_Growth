@@ -1,23 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Hex : MonoBehaviour
 {
-    public HexType type;
-    public bool disordered = false;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [SerializeField]
+    private HexType Type;
+    public DisorderType disorderType { get; set; } = DisorderType.None;
 
     void OnMouseOver()
     {
@@ -25,5 +12,10 @@ public class Hex : MonoBehaviour
         {
             GameStateManager.Instance.SelectHex(this);
         }
+    }
+
+    public HexType getType()
+    {
+        return Type;
     }
 }

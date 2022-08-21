@@ -8,7 +8,7 @@ public class GameStateManager : MonoBehaviour
     public static GameStateManager Instance => s_Instance;
     private static GameStateManager s_Instance;
 
-    public GameObject selectedTile { get; set; }
+    public Hex selectedHex { get; set; }
 
     // Turns and moves.
     public int turn { get; private set; }
@@ -48,7 +48,9 @@ public class GameStateManager : MonoBehaviour
 
     public void SelectHex(Hex hex)
     {
-        switch (hex.type)
+        selectedHex = hex;
+
+        switch (hex.getType())
         {
             case HexType.Empty:
                 OpenBuildHex();
@@ -77,7 +79,7 @@ public class GameStateManager : MonoBehaviour
 
     private void OpenFixHex(Hex hex)
     {
-        if (hex.disordered)
+        if (!hex.disorderType.Equals(DisorderType.None))
         {
 
         }
