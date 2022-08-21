@@ -5,8 +5,8 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [Header("Pan")]
-    private const float PanSpeed = 5f;
-    private const float PanBorderThickness = 20f;
+    private const float PanSpeed = 1f;
+    private const float PanBorderThickness = 10f;
     private Vector2 _panLimit;
 
     [Header("Scroll")]
@@ -17,8 +17,8 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         _panLimit = new Vector2(10f, 10f);
-        this.transform.rotation = new Quaternion(0.6f, 0, 0, 1);
-        this.transform.position = new Vector3(0, 15, -6);
+        transform.rotation = new Quaternion(0.6f, 0, 0, 1);
+        transform.position = new Vector3(0, 15, -6);
     }
 
     // Update is called once per frame
