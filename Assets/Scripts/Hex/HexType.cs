@@ -5,5 +5,6 @@ public enum HexType
     Town,
     Castle,
     Food,
-    Plain
+    Plain,
+    Forest
 }

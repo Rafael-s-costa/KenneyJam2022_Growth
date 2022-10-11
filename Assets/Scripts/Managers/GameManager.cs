@@ -3,17 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameStateManager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    public static GameStateManager Instance => s_Instance;
-    private static GameStateManager s_Instance;
+    public static GameManager Instance => s_Instance;
+    private static GameManager s_Instance;
+
+    private HexGrid hexGrid;
+    private ActionMenuManager actionMenuManager;
+    private UIManager uiManager;
 
     public Hex selectedHex { get; set; }
 
     // Turns and moves.
-    public int turn { get; private set; }
+    public int turn { get; private set; } = 1;
     public int turnMoves { get; private set; } = 1;
-    public int availableMoves { get; private set; }
+    public int availableMoves { get; private set; } = 1;
 
     public bool inTurn { get; private set; } = true;
 
@@ -26,10 +30,14 @@ public class GameStateManager : MonoBehaviour
         s_Instance = this;
     }
 
-    // Start is called before the first frame update
     void Start()
     {
+        hexGrid = GameObject.Find("HexGrid").GetComponent<HexGrid>();
+        uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
 
+        GameObject castleObject = hexGrid.SpawnHex("castle", hexGrid.gameObject.transform);
+
+        SpawnNeighbouringEmptyHexes(castleObject.transform);
     }
 
     // Update is called once per frame
@@ -46,30 +54,36 @@ public class GameStateManager : MonoBehaviour
     }
     
 
-    public void SelectHex(Hex hex)
+    public void SelectHex(GameObject hexObject)
     {
-        selectedHex = hex;
+        selectedHex = hexObject.GetComponent<Hex>();
 
-        switch (hex.getType())
+        switch (selectedHex.getType())
         {
             case HexType.Empty:
-                OpenBuildHex();
+                OpenBuildHex(hexObject);
                 break;
             case HexType.Water:
             case HexType.Town:
             case HexType.Castle:
             case HexType.Food:
             case HexType.Plain:
-                OpenFixHex(hex);
+            case HexType.Forest:
+                OpenFixHex(selectedHex);
                 break;
             default:
                 break;
         }
     }
 
-    private void OpenBuildHex()
+    private void OpenBuildHex(GameObject emptyHex)
     {
+        Transform emptyHexTransform = emptyHex.transform;
+        GameObject newHex = hexGrid.SpawnHex("farm", emptyHexTransform);
+        SpawnNeighbouringEmptyHexes(newHex.transform);
+        RemoveTurnMove();
 
+        Destroy(emptyHex);
     }
 
     public void BuildHex(Hex hex)
@@ -90,14 +104,16 @@ public class GameStateManager : MonoBehaviour
         RemoveTurnMove();
     }
 
-    public void SpawnNeighbouringEmptyHexes(Hex hex)
+    private void SpawnNeighbouringEmptyHexes(Transform hexTransform)
     {
-
+        hexGrid.SpawnNeighbouringEmptyHexes(hexTransform);
     }
 
     private void RemoveTurnMove()
     {
         availableMoves -= 1;
+
+        UpdateTurnUI();
     }
 
     private void EndTurn()
@@ -109,11 +125,20 @@ public class GameStateManager : MonoBehaviour
 
     private void StartTurn()
     {
+        turn++;
         availableMoves = turnMoves;
+
+        uiManager.SetTurnText(turn);
+        UpdateTurnUI();
     }
 
     private void GenerateDisorder()
     {
         Debug.Log("Generating disorder");
+    }
+
+    private void UpdateTurnUI()
+    {
+        uiManager.SetAvailableMoves(availableMoves, turnMoves);
     }
 }
